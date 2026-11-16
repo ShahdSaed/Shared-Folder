@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://hulda-unglutted-curably.ngrok-free.dev/api',
+  apiUrl: 'http://localhost:3000/api',
 };
