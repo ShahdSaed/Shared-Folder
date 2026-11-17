@@ -216,3 +216,28 @@
     }
   }
 }
+
+/* ── Mobile Responsive ── */
+@media (max-width: 480px) {
+  .login-page {
+    padding: 16px 12px;
+  }
+
+  .login-container {
+    padding: 24px 18px;
+    border-radius: var(--cfh-radius-lg);
+  }
+
+  .welcome-heading {
+    font-size: 18px;
+  }
+
+  .login-logo-wrap .login-logo {
+    height: 48px;
+    max-width: 180px;
+  }
+
+  .quick-btn-group {
+    grid-template-columns: 1fr;
+  }
+}

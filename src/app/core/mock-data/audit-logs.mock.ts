@@ -4,7 +4,7 @@ export const MOCK_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'log-101',
     timestamp: '2026-10-26T08:30:12Z',
-    userEmail: 'alex.morris@company.com',
+    userEmail: 'alex.morris',
     userName: 'Alex Morris',
     action: 'LOGIN_SUCCESS',
     ipAddress: '192.168.1.104',
@@ -14,7 +14,7 @@ export const MOCK_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'log-102',
     timestamp: '2026-10-26T08:14:05Z',
-    userEmail: 'sarah.chen@company.com',
+    userEmail: 'sarah.chen',
     userName: 'Sarah Chen',
     action: 'FILE_VIEWED',
     targetFile: 'Company Policy.pdf',
@@ -25,7 +25,7 @@ export const MOCK_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'log-103',
     timestamp: '2026-10-26T08:13:40Z',
-    userEmail: 'sarah.chen@company.com',
+    userEmail: 'sarah.chen',
     userName: 'Sarah Chen',
     action: 'FILE_ACCESS_ATTEMPT',
     targetFile: 'Company Policy.pdf',
@@ -36,7 +36,7 @@ export const MOCK_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'log-104',
     timestamp: '2026-10-26T07:45:22Z',
-    userEmail: 'rachel.adams@company.com',
+    userEmail: 'rachel.adams',
     userName: 'Rachel Adams',
     action: 'FILE_PASSWORD_FAILED',
     targetFile: 'Quarterly Report.xlsx',
@@ -47,7 +47,7 @@ export const MOCK_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'log-105',
     timestamp: '2026-10-25T17:10:00Z',
-    userEmail: 'alex.morris@company.com',
+    userEmail: 'alex.morris',
     userName: 'Alex Morris',
     action: 'FILE_UPLOAD',
     targetFile: 'Security Compliance Standard.pdf',
@@ -58,7 +58,7 @@ export const MOCK_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'log-106',
     timestamp: '2026-10-25T16:45:10Z',
-    userEmail: 'sarah.chen@company.com',
+    userEmail: 'sarah.chen',
     userName: 'Sarah Chen',
     action: 'LOGIN_SUCCESS',
     ipAddress: '192.168.1.142',
@@ -68,7 +68,7 @@ export const MOCK_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'log-107',
     timestamp: '2026-10-25T15:20:44Z',
-    userEmail: 'marcus.vance@company.com',
+    userEmail: 'marcus.vance',
     userName: 'Marcus Vance',
     action: 'FILE_UPDATED',
     targetFile: 'Employee Handbook.pdf',
@@ -79,17 +79,17 @@ export const MOCK_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'log-108',
     timestamp: '2026-10-25T14:02:11Z',
-    userEmail: 'alex.morris@company.com',
+    userEmail: 'alex.morris',
     userName: 'Alex Morris',
     action: 'USER_CREATED',
     ipAddress: '192.168.1.104',
     result: 'SUCCESS',
-    details: 'Created viewer account for James Wilson (james.wilson@company.com)',
+    details: 'Created viewer account for James Wilson (james.wilson@example.com)',
   },
   {
     id: 'log-109',
     timestamp: '2026-10-25T11:30:19Z',
-    userEmail: 'unknown.user@external.com',
+    userEmail: 'unknown.user',
     userName: 'Unknown',
     action: 'LOGIN_FAILED',
     ipAddress: '198.51.100.42',
@@ -99,7 +99,7 @@ export const MOCK_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'log-110',
     timestamp: '2026-10-24T18:45:00Z',
-    userEmail: 'alex.morris@company.com',
+    userEmail: 'alex.morris',
     userName: 'Alex Morris',
     action: 'FILE_VIEWED',
     targetFile: 'Quarterly Report.xlsx',
@@ -110,7 +110,7 @@ export const MOCK_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'log-111',
     timestamp: '2026-10-24T16:15:28Z',
-    userEmail: 'marcus.vance@company.com',
+    userEmail: 'marcus.vance',
     userName: 'Marcus Vance',
     action: 'FILE_LIST_VIEWED',
     ipAddress: '10.0.2.18',
@@ -120,7 +120,7 @@ export const MOCK_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'log-112',
     timestamp: '2026-10-24T10:05:00Z',
-    userEmail: 'alex.morris@company.com',
+    userEmail: 'alex.morris',
     userName: 'Alex Morris',
     action: 'USER_STATUS_CHANGED',
     ipAddress: '192.168.1.104',
@@ -130,7 +130,7 @@ export const MOCK_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'log-113',
     timestamp: '2026-10-23T14:22:15Z',
-    userEmail: 'elena.rostova@company.com',
+    userEmail: 'elena.rostova',
     userName: 'Elena Rostova',
     action: 'FILE_VIEWED',
     targetFile: 'Brand Guidelines.pdf',
@@ -141,7 +141,7 @@ export const MOCK_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'log-114',
     timestamp: '2026-10-23T12:11:00Z',
-    userEmail: 'guest.test@partner.com',
+    userEmail: 'guest.test',
     userName: 'Guest User',
     action: 'FILE_PASSWORD_FAILED',
     targetFile: 'Company Policy.pdf',

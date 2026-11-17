@@ -2,34 +2,37 @@
   <div class="viewer-page">
     <!-- Back Navigation + Header -->
     <div class="viewer-topbar">
-      <a routerLink="/shared-files" class="back-link">
-        <app-icon name="chevron-left" [size]="16"></app-icon>
-        Back to Shared Files
-      </a>
+      <div class="topbar-row-header">
+        <a routerLink="/shared-files" class="back-link">
+          <app-icon name="chevron-left" [size]="16"></app-icon>
+          <span>Back to Shared Files</span>
+        </a>
+        <div class="topbar-badges">
+          @if (isViewer()) {
+            <app-status-badge variant="neutral" size="sm">
+              <app-icon name="shield" [size]="12"></app-icon>
+              Anti-Screenshot
+            </app-status-badge>
+          }
+          <app-status-badge variant="success" size="sm">
+            <app-icon name="shield-check" [size]="12"></app-icon>
+            Verified Access
+          </app-status-badge>
+        </div>
+      </div>
+
       <div class="viewer-file-header">
         <app-file-icon [type]="file()!.type" size="md"></app-file-icon>
-        <div>
-          <h1 class="viewer-filename">{{ file()!.name }}</h1>
+        <div class="viewer-file-info-col">
+          <h1 class="viewer-filename" [title]="file()!.name">{{ file()!.name }}</h1>
           <div class="viewer-meta">
-            <span>{{ file()!.type }}</span>
+            <span class="meta-tag">{{ file()!.type }}</span>
             <span class="dot">·</span>
-            <span>{{ file()!.size | number }} bytes</span>
+            <span>{{ file()!.size | fileSize }}</span>
             <span class="dot">·</span>
             <span>Uploaded {{ file()!.createdAt | date:'mediumDate' }}</span>
           </div>
         </div>
-      </div>
-      <div class="topbar-badges">
-        @if (isViewer()) {
-          <app-status-badge variant="neutral" size="sm">
-            <app-icon name="shield" [size]="12"></app-icon>
-            Anti-Screenshot Blur Active
-          </app-status-badge>
-        }
-        <app-status-badge variant="success" size="sm">
-          <app-icon name="shield-check" [size]="12"></app-icon>
-          Verified Access
-        </app-status-badge>
       </div>
     </div>
 
@@ -113,13 +116,37 @@
             </div>
           } @else {
             <div class="viewer-controls">
+              <div class="controls-left">
+                <button
+                  type="button"
+                  class="ctrl-btn fit-btn"
+                  (click)="resetZoom()"
+                  title="Fit document to width"
+                  aria-label="Fit document to width"
+                >
+                  <app-icon name="refresh-cw" [size]="13"></app-icon>
+                  <span>Fit Width</span>
+                </button>
+              </div>
               <div class="controls-right">
-                <button type="button" class="ctrl-btn" (click)="zoomOut()" aria-label="Zoom out">
-                  <app-icon name="zoom-out" [size]="16"></app-icon>
+                <button
+                  type="button"
+                  class="ctrl-btn"
+                  (click)="zoomOut()"
+                  aria-label="Zoom out"
+                  [disabled]="zoomLevel() <= 40"
+                >
+                  <app-icon name="zoom-out" [size]="15"></app-icon>
                 </button>
                 <span class="zoom-label">{{ zoomLevel() }}%</span>
-                <button type="button" class="ctrl-btn" (click)="zoomIn()" aria-label="Zoom in">
-                  <app-icon name="zoom-in" [size]="16"></app-icon>
+                <button
+                  type="button"
+                  class="ctrl-btn"
+                  (click)="zoomIn()"
+                  aria-label="Zoom in"
+                  [disabled]="zoomLevel() >= 200"
+                >
+                  <app-icon name="zoom-in" [size]="15"></app-icon>
                 </button>
               </div>
             </div>
@@ -132,6 +159,9 @@
             (mousemove)="onMouseMoveArea()"
             (mouseleave)="onMouseLeaveArea()"
             (mouseenter)="onMouseEnterArea()"
+            (touchstart)="onTouchStartArea()"
+            (touchmove)="onTouchMoveArea()"
+            (touchend)="onTouchEndArea()"
             (contextmenu)="$event.preventDefault()"
             (copy)="$event.preventDefault()"
             (cut)="$event.preventDefault()"
@@ -139,12 +169,16 @@
           >
             <!-- Blur / Shield curtain when window loses focus, mouse leaves, or stillness detected -->
             @if (isObscured()) {
-              <div class="screen-protection-curtain" (click)="onMouseEnterArea(); resetIdleTimer()">
+              <div
+                class="screen-protection-curtain"
+                (click)="onMouseEnterArea(); onTouchStartArea()"
+                (touchstart)="onTouchStartArea()"
+              >
                 <div class="curtain-box">
                   <app-icon name="shield" [size]="48" class="curtain-icon"></app-icon>
                   <h3>Document Protected</h3>
                   <p>Screen automatically blurred to protect confidential document.</p>
-                  <span class="curtain-hint">Move mouse here to resume viewing</span>
+                  <span class="curtain-hint">Tap screen or move mouse here to resume viewing</span>
                 </div>
               </div>
             }
@@ -169,15 +203,24 @@
                   [src]="activeFileBlobUrl()!"
                   class="document-iframe"
                   [class.blurred]="isObscured()"
+                  [style.zoom]="zoomLevel() !== 100 ? (zoomLevel() / 100) : null"
                   title="PDF Document"
                 ></iframe>
               } @else if (activeFileType() === 'image' && activeFileBlobUrl()) {
                 <div class="image-viewer-box" [class.blurred]="isObscured()">
-                  <img [src]="activeFileBlobUrl()!" [alt]="activeFolderFile()!.name" class="document-image" />
+                  <img
+                    [src]="activeFileBlobUrl()!"
+                    [alt]="activeFolderFile()!.name"
+                    class="document-image"
+                    [style.zoom]="zoomLevel() !== 100 ? (zoomLevel() / 100) : null"
+                  />
                 </div>
               } @else if (activeFileType() === 'text' && activeFileText()) {
                 <div class="text-viewer-box" [class.blurred]="isObscured()">
-                  <pre class="document-text-content">{{ activeFileText() }}</pre>
+                  <pre
+                    class="document-text-content"
+                    [style.zoom]="zoomLevel() !== 100 ? (zoomLevel() / 100) : null"
+                  >{{ activeFileText() }}</pre>
                 </div>
               } @else {
                 <div class="unsupported-viewer-box">
@@ -193,6 +236,7 @@
                 [src]="blobUrl()!"
                 class="document-iframe"
                 [class.blurred]="isObscured()"
+                [style.zoom]="zoomLevel() !== 100 ? (zoomLevel() / 100) : null"
                 title="Document viewer"
               ></iframe>
             }

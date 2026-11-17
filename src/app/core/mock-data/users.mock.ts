@@ -3,7 +3,8 @@ import { User } from '../models/user.model';
 export const MOCK_ADMIN_USER: User = {
   id: 'usr-001',
   fullName: 'Alex Morris',
-  email: 'alex.morris@company.com',
+  username: 'alex.morris',
+  email: 'alex.morris',
   role: 'ADMIN',
   status: 'ACTIVE',
   createdAt: '2025-01-15T09:00:00Z',
@@ -13,7 +14,8 @@ export const MOCK_ADMIN_USER: User = {
 export const MOCK_VIEWER_USER: User = {
   id: 'usr-002',
   fullName: 'Sarah Chen',
-  email: 'sarah.chen@company.com',
+  username: 'sarah.chen',
+  email: 'sarah.chen',
   role: 'VIEWER',
   status: 'ACTIVE',
   createdAt: '2025-02-10T10:15:00Z',
@@ -26,7 +28,8 @@ export const MOCK_USERS: User[] = [
   {
     id: 'usr-003',
     fullName: 'Marcus Vance',
-    email: 'marcus.vance@company.com',
+    username: 'marcus.vance',
+    email: 'marcus.vance',
     role: 'ADMIN',
     status: 'ACTIVE',
     createdAt: '2025-03-01T11:20:00Z',
@@ -35,7 +38,8 @@ export const MOCK_USERS: User[] = [
   {
     id: 'usr-004',
     fullName: 'Elena Rostova',
-    email: 'elena.rostova@company.com',
+    username: 'elena.rostova',
+    email: 'elena.rostova',
     role: 'VIEWER',
     status: 'ACTIVE',
     createdAt: '2025-04-18T13:45:00Z',
@@ -44,7 +48,8 @@ export const MOCK_USERS: User[] = [
   {
     id: 'usr-005',
     fullName: 'David Kim',
-    email: 'david.kim@company.com',
+    username: 'david.kim',
+    email: 'david.kim',
     role: 'VIEWER',
     status: 'INACTIVE',
     createdAt: '2025-05-12T08:00:00Z',
@@ -53,19 +58,11 @@ export const MOCK_USERS: User[] = [
   {
     id: 'usr-006',
     fullName: 'Rachel Adams',
-    email: 'rachel.adams@company.com',
+    username: 'rachel.adams',
+    email: 'rachel.adams',
     role: 'VIEWER',
     status: 'ACTIVE',
     createdAt: '2025-06-25T15:30:00Z',
     avatarInitials: 'RA',
-  },
-  {
-    id: 'usr-007',
-    fullName: 'James Wilson',
-    email: 'james.wilson@company.com',
-    role: 'VIEWER',
-    status: 'ACTIVE',
-    createdAt: '2025-08-04T09:40:00Z',
-    avatarInitials: 'JW',
   },
 ];

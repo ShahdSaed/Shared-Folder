@@ -16,7 +16,8 @@ export interface ApiAuditLog {
   user?: {
     id: string;
     name: string;
-    email: string;
+    username?: string;
+    email?: string;
     role: string;
   } | null;
 }
@@ -50,7 +51,7 @@ export function mapApiAuditLog(log: ApiAuditLog): AuditLog {
   return {
     id: log.id,
     timestamp: log.createdAt,
-    userEmail: log.user?.email ?? '—',
+    userEmail: log.user?.username ?? log.user?.email ?? '—',
     userName: log.user?.name ?? (log.userId ? 'User' : 'System'),
     action: log.action as ActivityAction,
     targetFile: log.targetType === 'FILE' ? (log.targetId ?? undefined) : undefined,

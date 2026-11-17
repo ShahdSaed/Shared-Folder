@@ -14,26 +14,26 @@
     <!-- Login Form -->
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
 
-      <!-- Email Field -->
+      <!-- Username Field -->
       <div class="form-group">
-        <label for="email">
-          Email Address
+        <label for="username">
+          Username
           <span class="required-indicator" aria-hidden="true">*</span>
         </label>
         <input
-          id="email"
-          type="email"
-          formControlName="email"
-          [class]="'form-control' + (emailInvalid ? ' is-invalid' : '')"
-          placeholder="name@company.com"
-          autocomplete="email"
+          id="username"
+          type="text"
+          formControlName="username"
+          [class]="'form-control' + (usernameInvalid ? ' is-invalid' : '')"
+          placeholder="Enter your username"
+          autocomplete="username"
           aria-required="true"
-          [attr.aria-describedby]="emailInvalid ? 'email-error' : null"
+          [attr.aria-describedby]="usernameInvalid ? 'username-error' : null"
         />
-        @if (emailInvalid) {
-          <span id="email-error" class="input-error" role="alert">
+        @if (usernameInvalid) {
+          <span id="username-error" class="input-error" role="alert">
             <app-icon name="alert-circle" [size]="12"></app-icon>
-            {{ emailErrorMessage }}
+            {{ usernameErrorMessage }}
           </span>
         }
       </div>

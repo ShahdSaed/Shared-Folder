@@ -52,9 +52,12 @@
           @for (file of pagedFiles(); track file.id) {
             <tr>
               <td class="name-cell">
-                <app-file-icon [type]="file.type" size="sm"></app-file-icon>
-                <div class="name-info">
-                  <span class="file-name">{{ file.name }}</span>
+                <div class="name-cell-wrapper">
+                  <app-file-icon [type]="file.type" size="sm"></app-file-icon>
+                  <div class="name-info">
+                    <span class="file-name" [title]="file.name">{{ file.name }}</span>
+                    <span class="file-meta-mobile">{{ file.updatedAt | timeAgo }} &bull; {{ file.size | fileSize }}</span>
+                  </div>
                 </div>
               </td>
               <td>
@@ -261,7 +264,7 @@
                 />
                 <div class="viewer-info">
                   <span class="viewer-name">{{ viewer.fullName }}</span>
-                  <span class="viewer-email">{{ viewer.email }}</span>
+                  <span class="viewer-email">{{ viewer.username || viewer.email }}</span>
                 </div>
               </label>
             }
@@ -392,7 +395,7 @@
           >
             <option value="">Select a viewer...</option>
             @for (v of availableViewersForFile(); track v.id) {
-              <option [value]="v.id">{{ v.fullName }} ({{ v.email }})</option>
+              <option [value]="v.id">{{ v.fullName }} ({{ v.username || v.email }})</option>
             }
           </select>
         </div>
@@ -448,7 +451,7 @@
                   <td>
                     <div class="viewer-col">
                       <span class="viewer-name">{{ grant.user?.name || 'Viewer' }}</span>
-                      <span class="viewer-email">{{ grant.user?.email || '' }}</span>
+                      <span class="viewer-email">{{ grant.user?.username || grant.user?.email || '' }}</span>
                     </div>
                   </td>
                   <td>

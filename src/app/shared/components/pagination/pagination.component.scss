@@ -62,3 +62,19 @@
 .nav-btn {
   color: var(--cfh-text-secondary);
 }
+
+/* ── Mobile Responsive ── */
+@media (max-width: 480px) {
+  .pagination-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .page-btn {
+    min-width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+}

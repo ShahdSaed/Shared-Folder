@@ -23,7 +23,7 @@
         </div>
         <div class="user-details-col">
           <span class="user-greeting">{{ user.fullName }}</span>
-          <span class="user-email-sub">{{ user.email }}</span>
+          <span class="user-email-sub">&#64;{{ user.username }}</span>
         </div>
         <app-status-badge
           [variant]="user.role === 'ADMIN' ? 'info' : 'neutral'"

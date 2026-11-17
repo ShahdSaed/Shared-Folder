@@ -44,10 +44,28 @@
 }
 
 .name-cell {
+  vertical-align: middle;
+}
+
+.name-cell-wrapper {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: 180px;
+  min-width: 0;
+  width: 100%;
+}
+
+.user-info-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.user-username-mobile {
+  display: none;
+  font-size: 11px;
+  color: var(--cfh-text-secondary);
+  margin-top: 1px;
 }
 
 .user-avatar {
@@ -67,6 +85,9 @@
 .user-full-name {
   font-weight: 500;
   font-size: 13.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .email-cell {
@@ -84,6 +105,94 @@
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+/* ── Mobile Responsive ── */
+@media (max-width: 768px) {
+  .search-input-wrap {
+    .search-input { min-width: 0; width: 100%; }
+  }
+
+  .filter-select { min-width: 0; width: 100%; }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .toolbar-left {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .user-username-mobile {
+    display: block;
+  }
+
+  /* Hide Username (2) and Created (5) columns on mobile */
+  .cfh-table {
+    width: 100%;
+    table-layout: fixed;
+
+    thead th:nth-child(2),
+    thead th:nth-child(5),
+    tbody td:nth-child(2),
+    tbody td:nth-child(5) {
+      display: none !important;
+    }
+
+    thead th:first-child {
+      width: auto;
+      padding-left: 10px;
+    }
+
+    thead th:last-child {
+      width: 75px;
+      text-align: right;
+      padding-right: 10px;
+    }
+
+    tbody td:first-child {
+      padding: 10px;
+    }
+
+    tbody td:last-child {
+      width: 75px;
+      padding: 10px;
+      text-align: right;
+    }
+  }
+
+  .action-btn-group {
+    justify-content: flex-end;
+  }
+
+  .name-cell {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .cfh-table {
+    /* On tiny screens, hide Status as well so Name, Role, Actions fit cleanly */
+    thead th:nth-child(4),
+    tbody td:nth-child(4) {
+      display: none !important;
+    }
+
+    thead th:last-child,
+    tbody td:last-child {
+      width: 70px;
+      padding: 8px;
+    }
+
+    thead th:first-child,
+    tbody td:first-child {
+      padding: 8px;
+    }
+  }
 }
 
 .action-icon-btn {

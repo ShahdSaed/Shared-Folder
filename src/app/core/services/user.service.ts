@@ -97,12 +97,19 @@ export class UserService {
 
   public createUser(data: {
     name: string;
-    email: string;
+    username?: string;
+    email?: string;
     password: string;
     role?: 'ADMIN' | 'VIEWER';
   }): Observable<User> {
+    const payload = {
+      name: data.name,
+      username: data.username || data.email,
+      password: data.password,
+      role: data.role
+    };
     return this.http
-      .post<UserResponse>(`${this.apiUrl}/users`, data, { withCredentials: true })
+      .post<UserResponse>(`${this.apiUrl}/users`, payload, { withCredentials: true })
       .pipe(
         tap((res) => {
           const newUser = mapApiUser(res.data.user);

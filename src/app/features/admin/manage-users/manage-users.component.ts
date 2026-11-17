@@ -64,7 +64,7 @@ export class ManageUsersComponent implements OnInit {
 
   userForm: FormGroup = this.fb.group({
     fullName: ['', [Validators.required, Validators.minLength(2)]],
-    email: ['', [Validators.required, Validators.email]],
+    username: ['', [Validators.required, Validators.pattern(/^(?=.{3,20}$)[a-zA-Z][a-zA-Z0-9]*(?:[._][a-zA-Z0-9]+)*$/)]],
     password: ['', [Validators.required, Validators.minLength(8)]],
     role: ['VIEWER' as UserRole],
     status: ['ACTIVE' as AccountStatus],
@@ -83,7 +83,9 @@ export class ManageUsersComponent implements OnInit {
     const q = this.searchQuery().trim().toLowerCase();
     if (q) {
       users = users.filter(
-        (u) => u.fullName.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+        (u) =>
+          u.fullName.toLowerCase().includes(q) ||
+          (u.username && u.username.toLowerCase().includes(q))
       );
     }
     const role = this.roleFilter();
@@ -105,7 +107,7 @@ export class ManageUsersComponent implements OnInit {
   openAddModal(): void {
     this.editingUser.set(null);
     this.userForm.reset({ role: 'VIEWER', status: 'ACTIVE', password: '' });
-    this.userForm.get('email')?.enable();
+    this.userForm.get('username')?.enable();
     this.userForm.get('password')?.setValidators([Validators.required, Validators.minLength(8)]);
     this.userForm.get('password')?.updateValueAndValidity();
     this.showUserPassword = false;
@@ -114,8 +116,14 @@ export class ManageUsersComponent implements OnInit {
 
   openEditModal(user: User): void {
     this.editingUser.set(user);
-    this.userForm.reset({ fullName: user.fullName, email: user.email, role: user.role, status: user.status, password: '' });
-    this.userForm.get('email')?.disable();
+    this.userForm.reset({
+      fullName: user.fullName,
+      username: user.username,
+      role: user.role,
+      status: user.status,
+      password: '',
+    });
+    this.userForm.get('username')?.disable();
     this.userForm.get('password')?.clearValidators();
     this.userForm.get('password')?.updateValueAndValidity();
     this.showUserModal.set(true);
@@ -153,9 +161,9 @@ export class ManageUsersComponent implements OnInit {
   onSaveUser(): void {
     if (this.userForm.invalid) return;
 
-    const { fullName, email, password, role, status } = this.userForm.getRawValue() as {
+    const { fullName, username, password, role, status } = this.userForm.getRawValue() as {
       fullName: string;
-      email: string;
+      username: string;
       password?: string;
       role: UserRole;
       status: AccountStatus;
@@ -178,7 +186,7 @@ export class ManageUsersComponent implements OnInit {
       });
     } else {
       const userPassword = password && password.trim().length >= 8 ? password.trim() : 'ChangeMe123!';
-      this.userService.createUser({ name: fullName, email, role, password: userPassword }).subscribe({
+      this.userService.createUser({ name: fullName, username, role, password: userPassword }).subscribe({
         next: () => {
           this.toastService.success(`Account created for ${fullName}.`, 'User Added');
           this.closeUserModal();

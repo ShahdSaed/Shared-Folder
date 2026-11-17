@@ -10,6 +10,7 @@ import { FileItem } from '../../core/models/file-item.model';
 import { FileIconComponent } from '../../shared/components/file-icon/file-icon.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { IconComponent } from '../../shared/components/icon/icon.component';
+import { FileSizePipe } from '../../shared/pipes/file-size.pipe';
 
 export interface FolderFileItem {
   name: string;
@@ -30,6 +31,7 @@ export interface FolderFileItem {
     StatusBadgeComponent,
     IconComponent,
     DatePipe,
+    FileSizePipe,
   ],
   templateUrl: './document-viewer.component.html',
   styleUrl: './document-viewer.component.scss',
@@ -52,13 +54,16 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
   readonly isWindowBlurred = signal(false);
   readonly isScreenshotAttempted = signal(false);
   readonly isMouseOutside = signal(false);
+  readonly isTouching = signal(false);
   readonly isIdle = signal(false);
   readonly watermarkItems = Array(28).fill(0);
 
   private idleTimer: any = null;
+  private readonly isTouchDevice =
+    typeof window !== 'undefined' && ('ontouchstart' in window || (navigator?.maxTouchPoints ?? 0) > 0);
 
   readonly isObscured = computed(
-    () => this.isViewer() && (this.isWindowBlurred() || this.isScreenshotAttempted() || this.isMouseOutside() || this.isIdle())
+    () => this.isViewer() && (this.isWindowBlurred() || this.isScreenshotAttempted() || (!this.isTouching() && this.isMouseOutside()))
   );
 
   // Keep these for template compatibility
@@ -137,10 +142,54 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
     }
   }
 
-  onMouseLeaveArea(): void {
+  @HostListener('document:mouseleave')
+  onDocumentMouseLeave(): void {
+    if (this.isTouchDevice || this.isTouching()) return;
     if (this.isViewer()) {
       this.isMouseOutside.set(true);
-      clearTimeout(this.idleTimer);
+      this.cdr.detectChanges();
+    }
+  }
+
+  @HostListener('document:mouseenter')
+  onDocumentMouseEnter(): void {
+    if (this.isViewer()) {
+      this.isMouseOutside.set(false);
+      this.cdr.detectChanges();
+    }
+  }
+
+  @HostListener('document:touchstart')
+  onDocumentTouchStart(): void {
+    if (this.isViewer()) {
+      this.isTouching.set(true);
+      this.isMouseOutside.set(false);
+      this.cdr.detectChanges();
+    }
+  }
+
+  @HostListener('document:touchmove')
+  onDocumentTouchMove(): void {
+    if (this.isViewer()) {
+      this.isTouching.set(true);
+      this.isMouseOutside.set(false);
+      this.cdr.detectChanges();
+    }
+  }
+
+  @HostListener('document:touchend')
+  onDocumentTouchEnd(): void {
+    if (this.isViewer()) {
+      this.isTouching.set(false);
+      this.isMouseOutside.set(false);
+      this.cdr.detectChanges();
+    }
+  }
+
+  onMouseLeaveArea(): void {
+    if (this.isTouchDevice || this.isTouching()) return;
+    if (this.isViewer()) {
+      this.isMouseOutside.set(true);
       this.cdr.detectChanges();
     }
   }
@@ -148,29 +197,47 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
   onMouseEnterArea(): void {
     if (this.isViewer()) {
       this.isMouseOutside.set(false);
-      this.resetIdleTimer();
+      this.cdr.detectChanges();
+    }
+  }
+
+  onTouchStartArea(): void {
+    if (this.isViewer()) {
+      this.isTouching.set(true);
+      this.isMouseOutside.set(false);
+      this.cdr.detectChanges();
+    }
+  }
+
+  onTouchMoveArea(): void {
+    if (this.isViewer()) {
+      this.isTouching.set(true);
+      this.isMouseOutside.set(false);
+      this.cdr.detectChanges();
+    }
+  }
+
+  onTouchEndArea(): void {
+    if (this.isViewer()) {
+      this.isTouching.set(false);
+      this.isMouseOutside.set(false);
       this.cdr.detectChanges();
     }
   }
 
   onMouseMoveArea(): void {
-    this.resetIdleTimer();
+    if (this.isViewer() && this.isMouseOutside()) {
+      this.isMouseOutside.set(false);
+      this.cdr.detectChanges();
+    }
   }
 
   resetIdleTimer(): void {
-    if (!this.isViewer()) return;
-
+    clearTimeout(this.idleTimer);
     if (this.isIdle()) {
       this.isIdle.set(false);
       this.cdr.detectChanges();
     }
-
-    clearTimeout(this.idleTimer);
-    // Auto-blur after 4 seconds of stillness so a user cannot freeze screen for a screenshot
-    this.idleTimer = setTimeout(() => {
-      this.isIdle.set(true);
-      this.cdr.detectChanges();
-    }, 4500);
   }
 
   @HostListener('window:keyup', ['$event'])
@@ -270,8 +337,8 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
         this.isLoading.set(false);
         const url = URL.createObjectURL(blob);
         this.rawBlobUrl = url;
-        // Suppress browser PDF toolbar, download, save, and print actions
-        const viewerUrl = `${url}#toolbar=0&navpanes=0`;
+        // Suppress browser PDF toolbar, download, save, and print actions while fitting to horizontal page width
+        const viewerUrl = `${url}#toolbar=0&navpanes=0&scrollbar=1&view=FitH&zoom=page-width`;
         this.blobUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(viewerUrl));
         this.cdr.detectChanges();
       },
@@ -307,7 +374,9 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
         const pdfBlob = new Blob([fileBlob], { type: 'application/pdf' });
         const url = URL.createObjectURL(pdfBlob);
         this.rawActiveBlobUrl = url;
-        this.activeFileBlobUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(`${url}#toolbar=0&navpanes=0`));
+        this.activeFileBlobUrl.set(
+          this.sanitizer.bypassSecurityTrustResourceUrl(`${url}#toolbar=0&navpanes=0&scrollbar=1&view=FitH&zoom=page-width`)
+        );
         this.activeFileType.set('pdf');
       } else if (['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg'].includes(ext)) {
         const mime = ext === 'svg' ? 'image/svg+xml' : `image/${ext === 'jpg' ? 'jpeg' : ext}`;
@@ -389,10 +458,14 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
   }
 
   zoomIn(): void {
-    if (this.zoomLevel() < 200) this.zoomLevel.update((z) => z + 10);
+    if (this.zoomLevel() < 200) this.zoomLevel.update((z) => Math.min(200, z + 15));
   }
 
   zoomOut(): void {
-    if (this.zoomLevel() > 50) this.zoomLevel.update((z) => z - 10);
+    if (this.zoomLevel() > 40) this.zoomLevel.update((z) => Math.max(40, z - 15));
+  }
+
+  resetZoom(): void {
+    this.zoomLevel.set(100);
   }
 }

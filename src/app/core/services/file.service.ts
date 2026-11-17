@@ -42,7 +42,8 @@ export interface FileGrant {
   user?: {
     id: string;
     name: string;
-    email: string;
+    username?: string;
+    email?: string;
     role: string;
   };
 }

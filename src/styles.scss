@@ -347,3 +347,67 @@ select.form-control {
     scroll-behavior: auto !important;
   }
 }
+
+/* ==========================================================================
+   Global Mobile Responsive Helpers
+   ========================================================================== */
+
+/* Table container: allow horizontal scroll on small screens */
+@media (max-width: 768px) {
+  .cfh-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .cfh-table {
+    thead th {
+      padding: 10px 12px;
+      font-size: 11px;
+    }
+    tbody td {
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .section-heading {
+    font-size: 16px;
+  }
+
+  /* Dialog / Modal responsive (cdk-overlay) */
+  .cdk-overlay-pane {
+    max-width: calc(100vw - 24px) !important;
+  }
+
+  .form-group {
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 18px;
+  }
+
+  .cfh-table {
+    thead th {
+      padding: 8px 10px;
+    }
+    tbody td {
+      padding: 8px 10px;
+    }
+  }
+}
+
+/* Touch-friendly tap targets */
+@media (pointer: coarse) {
+  .ctrl-btn,
+  .nav-link {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

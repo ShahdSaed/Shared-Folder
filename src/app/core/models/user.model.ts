@@ -8,7 +8,8 @@ export type AccountStatus = 'ACTIVE' | 'INACTIVE';
 export interface ApiUser {
   id: string;
   name: string;        // backend uses 'name'
-  email: string;
+  username: string;
+  email?: string;
   role: UserRole;
   isActive: boolean;   // backend uses 'isActive'
   createdAt: string;
@@ -18,7 +19,8 @@ export interface ApiUser {
 export interface User {
   id: string;
   fullName: string;      // mapped from ApiUser.name
-  email: string;
+  username: string;
+  email?: string;
   role: UserRole;
   status: AccountStatus; // mapped from ApiUser.isActive
   createdAt: string;
@@ -34,16 +36,18 @@ export interface AuthSession {
 
 /** Converts a backend user object to the frontend User shape */
 export function mapApiUser(apiUser: ApiUser): User {
-  const initials = apiUser.name
+  const initials = (apiUser.name || 'User')
     .split(' ')
     .map((n) => n[0])
     .join('')
     .toUpperCase()
     .substring(0, 2);
+  const username = apiUser.username || apiUser.email || '';
   return {
     id: apiUser.id,
     fullName: apiUser.name,
-    email: apiUser.email,
+    username,
+    email: username,
     role: apiUser.role,
     status: apiUser.isActive ? 'ACTIVE' : 'INACTIVE',
     createdAt: apiUser.createdAt,

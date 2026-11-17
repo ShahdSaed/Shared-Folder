@@ -8,6 +8,8 @@ import { ToastService } from '../../../core/services/toast.service';
 import { AppButtonComponent } from '../../../shared/components/app-button/app-button.component';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 
+export const USERNAME_PATTERN = /^(?=.{3,20}$)[a-zA-Z][a-zA-Z0-9]*(?:[._][a-zA-Z0-9]+)*$/;
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -22,7 +24,7 @@ export class LoginComponent {
   private readonly router = inject(Router);
 
   loginForm: FormGroup = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
+    username: ['', [Validators.required, Validators.pattern(USERNAME_PATTERN)]],
     password: ['', [Validators.required, Validators.minLength(8)]],
     rememberMe: [false],
   });
@@ -31,24 +33,26 @@ export class LoginComponent {
   readonly isLoading = signal(false);
   readonly loginError = signal('');
 
-  get emailControl() {
-    return this.loginForm.get('email')!;
+  get usernameControl() {
+    return this.loginForm.get('username')!;
   }
   get passwordControl() {
     return this.loginForm.get('password')!;
   }
 
-  get emailInvalid(): boolean {
-    return this.emailControl.invalid && (this.emailControl.dirty || this.emailControl.touched);
+  get usernameInvalid(): boolean {
+    return this.usernameControl.invalid && (this.usernameControl.dirty || this.usernameControl.touched);
   }
 
   get passwordInvalid(): boolean {
     return this.passwordControl.invalid && (this.passwordControl.dirty || this.passwordControl.touched);
   }
 
-  get emailErrorMessage(): string {
-    if (this.emailControl.hasError('required')) return 'Email address is required.';
-    if (this.emailControl.hasError('email')) return 'Please enter a valid email address.';
+  get usernameErrorMessage(): string {
+    if (this.usernameControl.hasError('required')) return 'Username is required.';
+    if (this.usernameControl.hasError('pattern')) {
+      return 'Must be 3-20 characters, start with a letter, no consecutive or trailing symbols.';
+    }
     return '';
   }
 
@@ -67,13 +71,13 @@ export class LoginComponent {
     this.loginError.set('');
     this.isLoading.set(true);
 
-    const { email, password } = this.loginForm.value as {
-      email: string;
+    const { username, password } = this.loginForm.value as {
+      username: string;
       password: string;
       rememberMe: boolean;
     };
 
-    this.authService.login(email, password).subscribe({
+    this.authService.login(username, password).subscribe({
       next: (user) => {
         this.isLoading.set(false);
         this.toastService.success(`Welcome back, ${user.fullName}!`);
@@ -87,7 +91,7 @@ export class LoginComponent {
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
         if (err.status === 401) {
-          this.loginError.set('Invalid email or password. Please try again.');
+          this.loginError.set('Invalid username or password. Please try again.');
         } else if (err.status === 400) {
           this.loginError.set(err.error?.message ?? 'Invalid request. Please check your input.');
         } else if (err.status === 429) {

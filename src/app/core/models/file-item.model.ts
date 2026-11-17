@@ -10,7 +10,8 @@ export interface ApiFile {
   uploader?: {
     id: string;
     name: string;
-    email: string;
+    username?: string;
+    email?: string;
   };
   createdAt: string;
   updatedAt: string;

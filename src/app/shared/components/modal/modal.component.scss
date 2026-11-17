@@ -116,3 +116,52 @@
     transform: scale(1);
   }
 }
+
+/* ── Mobile Responsive ── */
+@media (max-width: 768px) {
+  .modal-backdrop {
+    padding: 10px;
+    align-items: flex-end;
+  }
+
+  .modal-dialog {
+    max-height: 85vh;
+    border-radius: var(--cfh-radius-lg) var(--cfh-radius-lg) 0 0;
+  }
+
+  .modal-sm,
+  .modal-md,
+  .modal-lg,
+  .modal-xl {
+    max-width: 100%;
+  }
+
+  .modal-header {
+    padding: 16px 18px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+  }
+
+  .modal-body {
+    padding: 16px 18px;
+  }
+
+  .modal-footer {
+    padding: 12px 18px;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-footer {
+    flex-direction: column;
+    gap: 8px;
+
+    app-button,
+    button {
+      width: 100%;
+    }
+  }
+}

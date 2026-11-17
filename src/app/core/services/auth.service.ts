@@ -124,13 +124,13 @@ export class AuthService {
   // ─── Login ────────────────────────────────────────────────────────────────
 
   public login(
-    email: string,
+    username: string,
     password: string
   ): Observable<User> {
     return this.http
       .post<AuthResponse>(
         `${this.apiUrl}/auth/login`,
-        { email, password },
+        { username, password },
         { withCredentials: true }
       )
       .pipe(
