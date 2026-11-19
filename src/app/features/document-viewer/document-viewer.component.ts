@@ -428,31 +428,53 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
 
   async renderPdfViaCanvas(blob: Blob): Promise<void> {
     this.isRenderingPdf.set(true);
+    this.cdr.detectChanges();
+
+    // Give DOM a tick to guarantee #pdf-canvas-container is mounted
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
     try {
       const pdfjs = (window as any).pdfjsLib;
       if (!pdfjs) {
-        console.warn('PDF.js not loaded, falling back');
+        console.warn('PDF.js not loaded on window, falling back to standard view');
         this.isPdfCanvasMode.set(false);
+        this.fallbackToIframe(blob);
         return;
       }
 
       const arrayBuffer = await blob.arrayBuffer();
-      const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
-      const pdf = await loadingTask.promise;
+      const loadingTask = pdfjs.getDocument({
+        data: arrayBuffer,
+        cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/',
+        cMapPacked: true,
+      });
 
+      const pdf = await loadingTask.promise;
       const container = document.getElementById('pdf-canvas-container');
-      if (!container) return;
+      if (!container) {
+        console.warn('PDF canvas container element not found in DOM');
+        this.isPdfCanvasMode.set(false);
+        this.fallbackToIframe(blob);
+        return;
+      }
       container.innerHTML = '';
 
       for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
         const page = await pdf.getPage(pageNum);
-        const viewport = page.getViewport({ scale: 1.5 });
+        // Compute scale based on container/screen width for crystal-sharp mobile fit
+        const containerWidth = container.clientWidth || window.innerWidth - 32;
+        const unscaledViewport = page.getViewport({ scale: 1 });
+        const scale = Math.max(1, (containerWidth / unscaledViewport.width) * (window.devicePixelRatio || 1));
+        const viewport = page.getViewport({ scale });
 
         const canvas = document.createElement('canvas');
         canvas.className = 'pdf-page-canvas';
         const context = canvas.getContext('2d');
         canvas.height = viewport.height;
         canvas.width = viewport.width;
+        // Keep CSS width fitting screen
+        canvas.style.width = '100%';
+        canvas.style.height = 'auto';
 
         container.appendChild(canvas);
 
@@ -465,10 +487,19 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
     } catch (err) {
       console.error('Error rendering PDF with PDF.js:', err);
       this.isPdfCanvasMode.set(false);
+      this.fallbackToIframe(blob);
     } finally {
       this.isRenderingPdf.set(false);
       this.cdr.detectChanges();
     }
+  }
+
+  private fallbackToIframe(blob: Blob): void {
+    const url = URL.createObjectURL(blob);
+    this.rawBlobUrl = url;
+    const viewerUrl = `${url}#toolbar=0&navpanes=0&scrollbar=1&view=FitH&zoom=page-width`;
+    this.blobUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(viewerUrl));
+    this.cdr.detectChanges();
   }
 
   closeFolderFilePreview(): void {
