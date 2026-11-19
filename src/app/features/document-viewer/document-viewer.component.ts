@@ -93,6 +93,8 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
   readonly activeFileBlobUrl = signal<SafeResourceUrl | null>(null);
   readonly activeFileText = signal<string | null>(null);
   readonly activeFileType = signal<'pdf' | 'image' | 'text' | 'unsupported'>('unsupported');
+  readonly isPdfCanvasMode = signal(false);
+  readonly isRenderingPdf = signal(false);
   readonly isLoadingFolderFile = signal(false);
 
   private rawBlobUrl: string | null = null;
@@ -340,6 +342,16 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
         this.isLoading.set(false);
         const url = URL.createObjectURL(blob);
         this.rawBlobUrl = url;
+
+        // If on mobile/touch device and file is PDF, use PDF.js canvas rendering
+        const isPdf = currentFile?.type === 'PDF' || blob.type.includes('pdf') || currentFile?.name?.toLowerCase().endsWith('.pdf');
+        if (this.isTouchDevice && isPdf) {
+          this.isPdfCanvasMode.set(true);
+          this.renderPdfViaCanvas(blob);
+          this.cdr.detectChanges();
+          return;
+        }
+
         // Suppress browser PDF toolbar, download, save, and print actions while fitting to horizontal page width
         const viewerUrl = `${url}#toolbar=0&navpanes=0&scrollbar=1&view=FitH&zoom=page-width`;
         this.blobUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(viewerUrl));
@@ -377,6 +389,15 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
         const pdfBlob = new Blob([fileBlob], { type: 'application/pdf' });
         const url = URL.createObjectURL(pdfBlob);
         this.rawActiveBlobUrl = url;
+
+        if (this.isTouchDevice) {
+          this.isPdfCanvasMode.set(true);
+          this.activeFileType.set('pdf');
+          this.renderPdfViaCanvas(pdfBlob);
+          this.cdr.detectChanges();
+          return;
+        }
+
         this.activeFileBlobUrl.set(
           this.sanitizer.bypassSecurityTrustResourceUrl(`${url}#toolbar=0&navpanes=0&scrollbar=1&view=FitH&zoom=page-width`)
         );
@@ -401,6 +422,51 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
     } finally {
       this.isLoadingFolderFile.set(false);
       this.resetIdleTimer();
+      this.cdr.detectChanges();
+    }
+  }
+
+  async renderPdfViaCanvas(blob: Blob): Promise<void> {
+    this.isRenderingPdf.set(true);
+    try {
+      const pdfjs = (window as any).pdfjsLib;
+      if (!pdfjs) {
+        console.warn('PDF.js not loaded, falling back');
+        this.isPdfCanvasMode.set(false);
+        return;
+      }
+
+      const arrayBuffer = await blob.arrayBuffer();
+      const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
+      const pdf = await loadingTask.promise;
+
+      const container = document.getElementById('pdf-canvas-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const viewport = page.getViewport({ scale: 1.5 });
+
+        const canvas = document.createElement('canvas');
+        canvas.className = 'pdf-page-canvas';
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        container.appendChild(canvas);
+
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport,
+        };
+        await page.render(renderContext).promise;
+      }
+    } catch (err) {
+      console.error('Error rendering PDF with PDF.js:', err);
+      this.isPdfCanvasMode.set(false);
+    } finally {
+      this.isRenderingPdf.set(false);
       this.cdr.detectChanges();
     }
   }

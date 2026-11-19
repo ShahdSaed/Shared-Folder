@@ -197,8 +197,24 @@
               </div>
             }
 
+            <!-- Mobile / Touch PDF Canvas rendering -->
+            <div
+              id="pdf-canvas-container"
+              class="pdf-canvas-wrapper"
+              [style.display]="isPdfCanvasMode() ? 'flex' : 'none'"
+            >
+              @if (isRenderingPdf()) {
+                <div class="pdf-canvas-loading">
+                  <div class="spinner"></div>
+                  <span>Rendering document...</span>
+                </div>
+              }
+            </div>
+
             @if (isFolder() && activeFolderFile()) {
-              @if (activeFileType() === 'pdf' && activeFileBlobUrl()) {
+              @if (isPdfCanvasMode()) {
+                <!-- Canvas rendered above -->
+              } @else if (activeFileType() === 'pdf' && activeFileBlobUrl()) {
                 <iframe
                   [src]="activeFileBlobUrl()!"
                   class="document-iframe"
@@ -232,13 +248,15 @@
                 </div>
               }
             } @else {
-              <iframe
-                [src]="blobUrl()!"
-                class="document-iframe"
-                [class.blurred]="isObscured()"
-                [style.zoom]="zoomLevel() !== 100 ? (zoomLevel() / 100) : null"
-                title="Document viewer"
-              ></iframe>
+              @if (!isPdfCanvasMode()) {
+                <iframe
+                  [src]="blobUrl()!"
+                  class="document-iframe"
+                  [class.blurred]="isObscured()"
+                  [style.zoom]="zoomLevel() !== 100 ? (zoomLevel() / 100) : null"
+                  title="Document viewer"
+                ></iframe>
+              }
             }
           </div>
         }
