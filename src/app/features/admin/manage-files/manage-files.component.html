@@ -218,7 +218,21 @@
           </button>
         </div>
         <div class="input-with-addon">
-          <input id="upload-pw" [type]="showUploadPw ? 'text' : 'password'" formControlName="password" class="form-control" placeholder="Set a password to protect this file" autocomplete="new-password" />
+          <input
+            id="upload-pw"
+            type="text"
+            formControlName="password"
+            class="form-control secure-file-code"
+            [class.code-masked]="!showUploadPw"
+            placeholder="Set a password to protect this file"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-form-type="other"
+          />
           <button type="button" class="input-addon-btn" (click)="showUploadPw = !showUploadPw">
             <app-icon [name]="showUploadPw ? 'eye-off' : 'eye'" [size]="16"></app-icon>
           </button>
@@ -230,7 +244,21 @@
 
       <div class="form-group">
         <label for="upload-confirm-pw">Confirm Password <span class="required-indicator">*</span></label>
-        <input id="upload-confirm-pw" type="password" formControlName="confirmPassword" class="form-control" placeholder="Re-enter the file password" autocomplete="new-password" />
+        <input
+          id="upload-confirm-pw"
+          type="text"
+          formControlName="confirmPassword"
+          class="form-control secure-file-code"
+          [class.code-masked]="!showUploadPw"
+          placeholder="Re-enter the file password"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          data-lpignore="true"
+          data-1p-ignore="true"
+          data-form-type="other"
+        />
         @if (uploadForm.hasError('passwordMismatch') && uploadForm.get('confirmPassword')!.touched) {
           <span class="input-error"><app-icon name="alert-circle" [size]="12"></app-icon> Passwords do not match.</span>
         }

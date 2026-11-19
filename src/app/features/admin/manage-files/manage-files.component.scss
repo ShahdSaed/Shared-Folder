@@ -448,6 +448,11 @@
 .input-with-addon {
   position: relative;
   .form-control { padding-right: 42px; }
+  .form-control.secure-file-code.code-masked {
+    -webkit-text-security: disc;
+    font-family: text-security-disc, -apple-system, sans-serif;
+    letter-spacing: 2px;
+  }
   .input-addon-btn {
     position: absolute;
     right: 10px;
