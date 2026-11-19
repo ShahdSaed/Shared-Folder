@@ -199,11 +199,11 @@
 <!-- Toggle Status Confirmation -->
 <app-confirmation-dialog
   [isOpen]="showStatusDialog()"
-  [title]="toggleTarget()?.status === 'ACTIVE' ? 'Deactivate Account' : 'Activate Account'"
-  [message]="statusDialogMessage()"
+  [title]="dialogTitle()"
+  [message]="dialogMessage()"
   submessage="This will update the user's access credentials and permissions across all systems."
-  [isDanger]="toggleTarget()?.status === 'ACTIVE'"
-  [confirmText]="toggleTarget()?.status === 'ACTIVE' ? 'Deactivate' : 'Activate'"
+  [isDanger]="dialogIsDanger()"
+  [confirmText]="dialogConfirmText()"
   (confirmed)="onToggleConfirmed()"
   (cancelled)="showStatusDialog.set(false)"
 ></app-confirmation-dialog>

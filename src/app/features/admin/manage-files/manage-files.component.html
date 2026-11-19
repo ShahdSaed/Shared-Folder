@@ -106,7 +106,7 @@
 <!-- Upload Modal -->
 <app-modal [isOpen]="showUploadModal()" [title]="uploadMode() === 'folder' ? 'Upload Protected Folder' : 'Upload File'" subtitle="Select content and configure encryption security settings." size="md" (closed)="closeUploadModal()">
   @if (!uploadSuccess()) {
-    <form [formGroup]="uploadForm" (ngSubmit)="onUpload()" novalidate>
+    <form [formGroup]="uploadForm" (ngSubmit)="onUpload()" novalidate autocomplete="off">
       <!-- Upload Mode Switcher -->
       <div class="upload-mode-selector">
         <button
@@ -339,7 +339,7 @@
         </button>
       </div>
       <div class="input-with-addon">
-        <input id="new-file-pw" [type]="showNewPw ? 'text' : 'password'" formControlName="newPassword" class="form-control" placeholder="Enter new file password" />
+        <input id="new-file-pw" [type]="showNewPw ? 'text' : 'password'" formControlName="newPassword" class="form-control" placeholder="Enter new file password" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" />
         <button type="button" class="input-addon-btn" (click)="showNewPw = !showNewPw">
           <app-icon [name]="showNewPw ? 'eye-off' : 'eye'" [size]="16"></app-icon>
         </button>

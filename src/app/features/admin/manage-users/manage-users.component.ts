@@ -62,6 +62,12 @@ export class ManageUsersComponent implements OnInit {
   readonly editingUser = signal<User | null>(null);
   readonly toggleTarget = signal<User | null>(null);
 
+  // Explicit dialog state — set once when dialog opens, never derived on-the-fly
+  readonly dialogTitle = signal('');
+  readonly dialogMessage = signal('');
+  readonly dialogConfirmText = signal('');
+  readonly dialogIsDanger = signal(false);
+
   userForm: FormGroup = this.fb.group({
     fullName: ['', [Validators.required, Validators.minLength(2)]],
     username: ['', [Validators.required, Validators.pattern(/^(?=.{3,20}$)[a-zA-Z][a-zA-Z0-9]*(?:[._][a-zA-Z0-9]+)*$/)]],
@@ -201,7 +207,17 @@ export class ManageUsersComponent implements OnInit {
   }
 
   confirmToggleStatus(user: User): void {
-    this.toggleTarget.set(user);
+    const isCurrentlyActive = user.status === 'ACTIVE';
+    // Set all dialog content explicitly before opening
+    this.toggleTarget.set({ ...user });
+    this.dialogTitle.set(isCurrentlyActive ? 'Deactivate Account' : 'Activate Account');
+    this.dialogMessage.set(
+      isCurrentlyActive
+        ? `Deactivate account for ${user.fullName}? They will no longer be able to sign in.`
+        : `Activate account for ${user.fullName}? They will be able to sign in again.`
+    );
+    this.dialogConfirmText.set(isCurrentlyActive ? 'Deactivate' : 'Activate');
+    this.dialogIsDanger.set(isCurrentlyActive);
     this.showStatusDialog.set(true);
   }
 

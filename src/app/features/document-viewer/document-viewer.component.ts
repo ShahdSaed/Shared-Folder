@@ -63,7 +63,10 @@ export class DocumentViewerComponent implements OnInit, OnDestroy {
     typeof window !== 'undefined' && ('ontouchstart' in window || (navigator?.maxTouchPoints ?? 0) > 0);
 
   readonly isObscured = computed(
-    () => this.isViewer() && (this.isWindowBlurred() || this.isScreenshotAttempted() || (!this.isTouching() && this.isMouseOutside()))
+    () =>
+      this.isViewer() &&
+      !this.isTouchDevice &&   // never obscure on touch/mobile devices
+      (this.isWindowBlurred() || this.isScreenshotAttempted() || (!this.isTouching() && this.isMouseOutside()))
   );
 
   // Keep these for template compatibility

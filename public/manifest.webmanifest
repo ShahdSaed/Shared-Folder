@@ -1,0 +1,27 @@
+{
+  "name": "Shared Folder",
+  "short_name": "SharedFolder",
+  "description": "Secure document sharing portal",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f1117",
+  "theme_color": "#1a1d2e",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon-64.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "91x91",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "300x109",
+      "type": "image/png"
+    }
+  ]
+}
